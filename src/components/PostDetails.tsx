@@ -5,26 +5,37 @@ import { NewCommentForm } from './NewCommentForm';
 import * as commentsApi from '../api/comments';
 
 import { Post } from '../types/Post';
-import { Comment, CommentData } from '../types/Comment';
+import { CommentData } from '../types/Comment';
+import { useAppDispatch, useAppSelector } from '../app/hooks';
+import { RootState } from '../app/store';
+import {
+  addComment as addCommentAction,
+  clearComments,
+  deleteComment as deleteCommentAction,
+  setComments,
+} from '../features/commentsSlice';
 
 type Props = {
   post: Post;
 };
 
 export const PostDetails: React.FC<Props> = ({ post }) => {
-  const [comments, setComments] = useState<Comment[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [hasError, setError] = useState(false);
   const [visible, setVisible] = useState(false);
+
+  const dispatch = useAppDispatch();
+  const comments = useAppSelector((state: RootState) => state.comments);
 
   function loadComments() {
     setLoaded(false);
     setError(false);
     setVisible(false);
+    dispatch(clearComments());
 
     commentsApi
       .getPostComments(post.id)
-      .then(setComments) // save the loaded comments
+      .then(commentsFromServer => dispatch(setComments(commentsFromServer))) // save the loaded comments
       .catch(() => setError(true)) // show an error when something went wrong
       .finally(() => setLoaded(true)); // hide the spinner
   }
@@ -66,7 +77,7 @@ export const PostDetails: React.FC<Props> = ({ post }) => {
         postId: post.id,
       });
 
-      setComments(currentComments => [...currentComments, newComment]);
+      dispatch(addCommentAction(newComment));
 
       // setComments([...comments, newComment]);
       // works wrong if we wrap `addComment` with `useCallback`
@@ -81,10 +92,7 @@ export const PostDetails: React.FC<Props> = ({ post }) => {
   const deleteComment = async (commentId: number) => {
     // we delete the comment immediately so as
     // not to make the user wait long for the actual deletion
-    // eslint-disable-next-line max-len
-    setComments(currentComments =>
-      currentComments.filter(comment => comment.id !== commentId),
-    );
+    dispatch(deleteCommentAction(commentId));
 
     await commentsApi.deleteComment(commentId);
   };
