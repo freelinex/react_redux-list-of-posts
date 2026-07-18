@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Loader } from './Loader';
 import { NewCommentForm } from './NewCommentForm';
 
@@ -14,7 +14,6 @@ import {
   setComments,
   setCommentsError,
   startLoading,
-  setVisible,
 } from '../features/commentsSlice';
 
 type Props = {
@@ -22,15 +21,17 @@ type Props = {
 };
 
 export const PostDetails: React.FC<Props> = ({ post }) => {
+  const [visible, setVisible] = useState(false);
+
   const dispatch = useAppDispatch();
   const {
     items: comments,
     loaded,
     hasError,
-    visible,
   } = useAppSelector((state: RootState) => state.comments);
 
   function loadComments() {
+    setVisible(false);
     dispatch(startLoading());
 
     commentsApi
@@ -124,7 +125,7 @@ export const PostDetails: React.FC<Props> = ({ post }) => {
             data-cy="WriteCommentButton"
             type="button"
             className="button is-link"
-            onClick={() => dispatch(setVisible())}
+            onClick={() => setVisible(true)}
           >
             Write a comment
           </button>

@@ -1,16 +1,16 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import classNames from 'classnames';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
 import { RootState } from '../app/store';
 import { getUsers } from '../api/users';
-import { setExpanded, setUsers } from '../features/usersSlice';
+import { setUsers } from '../features/usersSlice';
 import { setAuthor } from '../features/authorSlice';
 
 export const UserSelector: React.FC = () => {
+  const [expanded, setExpanded] = useState(false);
+
   const dispatch = useAppDispatch();
-  const { items: users, expanded } = useAppSelector(
-    (state: RootState) => state.users,
-  );
+  const { items: users } = useAppSelector((state: RootState) => state.users);
   const selectedUser = useAppSelector(
     (state: RootState) => state.author.selectedUser,
   );
@@ -25,7 +25,7 @@ export const UserSelector: React.FC = () => {
     }
 
     const handleDocumentClick = () => {
-      dispatch(setExpanded(false));
+      setExpanded(false);
     };
 
     document.addEventListener('click', handleDocumentClick);
@@ -49,7 +49,7 @@ export const UserSelector: React.FC = () => {
           aria-controls="dropdown-menu"
           onClick={e => {
             e.stopPropagation();
-            dispatch(setExpanded(!expanded));
+            setExpanded(current => !current);
           }}
         >
           <span>{selectedUser?.name || 'Choose a user'}</span>

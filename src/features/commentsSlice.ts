@@ -6,7 +6,6 @@ type CommentsState = {
   loaded: boolean;
   hasError: boolean;
   visible: boolean;
-  submitting: boolean;
 };
 
 const initialState: CommentsState = {
@@ -14,7 +13,6 @@ const initialState: CommentsState = {
   loaded: false,
   hasError: false,
   visible: false,
-  submitting: false,
 };
 
 const commentsSlice = createSlice({
@@ -51,10 +49,6 @@ const commentsSlice = createSlice({
       ...comments,
       visible: true,
     }),
-    setSubmitting: (comments, action: PayloadAction<boolean>) => ({
-      ...comments,
-      submitting: action.payload,
-    }),
   },
 });
 
@@ -66,5 +60,4 @@ export const {
   startLoading,
   setCommentsError,
   setVisible,
-  setSubmitting,
 } = commentsSlice.actions;
