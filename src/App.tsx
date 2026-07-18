@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import classNames from 'classnames';
 
 import 'bulma/css/bulma.css';
@@ -12,30 +12,39 @@ import { Loader } from './components/Loader';
 import { getUserPosts } from './api/posts';
 import { useAppDispatch, useAppSelector } from './app/hooks';
 import { RootState } from './app/store';
-import { clearPosts, setPosts } from './features/postSlice';
+import {
+  clearPosts,
+  setPosts,
+  setPostsError,
+  startLoading,
+} from './features/postSlice';
 import { setSelectedPost } from './features/selectedPostSlice';
 
 export const App: React.FC = () => {
-  const [loaded, setLoaded] = useState(false);
-  const [hasError, setError] = useState(false);
-
   const dispatch = useAppDispatch();
   const author = useAppSelector(
     (state: RootState) => state.author.selectedUser,
   );
-  const posts = useAppSelector((state: RootState) => state.posts);
+  const {
+    items: posts,
+    loaded,
+    hasError,
+  } = useAppSelector((state: RootState) => state.posts);
   const selectedPost = useAppSelector(
     (state: RootState) => state.selectedPost.selectedPost,
   );
 
   useEffect(() => {
     function loadUserPosts(userId: number) {
-      setLoaded(false);
+      dispatch(startLoading());
 
       getUserPosts(userId)
-        .then(response => dispatch(setPosts(response)))
-        .catch(() => setError(true))
-        .finally(() => setLoaded(true));
+        .then(response => {
+          dispatch(setPosts(response));
+        })
+        .catch(() => {
+          dispatch(setPostsError());
+        });
     }
 
     dispatch(setSelectedPost(null));

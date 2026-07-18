@@ -8,7 +8,7 @@ import React from 'react';
 
 export const PostsList: React.FC = () => {
   const dispatch = useAppDispatch();
-  const posts = useAppSelector((state: RootState) => state.posts);
+  const posts = useAppSelector((state: RootState) => state.posts.items);
   const selectedPostId = useAppSelector(
     (state: RootState) => state.selectedPost.selectedPost?.id,
   );
