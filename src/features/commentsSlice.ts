@@ -5,14 +5,12 @@ type CommentsState = {
   items: Comment[];
   loaded: boolean;
   hasError: boolean;
-  visible: boolean;
 };
 
 const initialState: CommentsState = {
   items: [],
   loaded: false,
   hasError: false,
-  visible: false,
 };
 
 const commentsSlice = createSlice({
@@ -45,10 +43,6 @@ const commentsSlice = createSlice({
       loaded: true,
       hasError: true,
     }),
-    setVisible: comments => ({
-      ...comments,
-      visible: true,
-    }),
   },
 });
 
@@ -59,5 +53,4 @@ export const {
   deleteComment,
   startLoading,
   setCommentsError,
-  setVisible,
 } = commentsSlice.actions;
